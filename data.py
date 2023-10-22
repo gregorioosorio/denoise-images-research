@@ -6,7 +6,7 @@ import random
 import re
 import cv2
 
-def load_data(base_dir = './img/dataset/', clean_dir = 'clean', noisy_dirs = ['noisy_1', 'noisy_3', 'noisy_5', 'noisy_7', 'noisy_9']):
+def load_data(img_size = (256,256), base_dir = './img/dataset/', clean_dir = 'clean', noisy_dirs = ['noisy_1', 'noisy_3', 'noisy_5', 'noisy_7', 'noisy_9']):
     # Image pattern
     img_pattern = r'_(\d+)\.png'
 
@@ -22,10 +22,10 @@ def load_data(base_dir = './img/dataset/', clean_dir = 'clean', noisy_dirs = ['n
             if filename.endswith(".png"):
                 matches = re.search(img_pattern, filename)
                 clean_img = io.imread(os.path.join(clean_dir, 'clean_'+matches.group(1)+'.png'), as_gray=True)
-                clean_img = cv2.resize(clean_img, (256, 256))
+                clean_img = cv2.resize(clean_img, img_size)
                 clean_list.append(clean_img)
                 noisy_img = io.imread(os.path.join(noisy_dir, filename), as_gray=True)
-                noisy_img = cv2.resize(noisy_img, (256, 256))
+                noisy_img = cv2.resize(noisy_img, img_size)
                 images_list.append(noisy_img)
         return (images_list,clean_list)
 
