@@ -22,17 +22,17 @@ def u_net(input_size = (256,256,1)):
 
     # encoder
     inputs = tf.keras.layers.Input(input_size)
-    x, temp1 = down_sampling(inputs, filters[0])
-    x, temp2 = down_sampling(x, filters[1])
-    x, temp3 = down_sampling(x, filters[2])
-    x, temp4 = down_sampling(x, filters[3])
-    x = down_sampling(x, filters[4], use_maxpool=False)
+    x, temp1 = down_sampling(inputs, filters[0], dropout_rate=0.1)
+    x, temp2 = down_sampling(x, filters[1], dropout_rate=0.1)
+    x, temp3 = down_sampling(x, filters[2], dropout_rate=0.2)
+    x, temp4 = down_sampling(x, filters[3], dropout_rate=0.2)
+    x = down_sampling(x, filters[4], use_maxpool=False, dropout_rate=0.3)
 
     # decoder
-    x = up_sampling(x, temp4, filters[3])
-    x = up_sampling(x, temp3, filters[2])
-    x = up_sampling(x, temp2, filters[1])
-    x = up_sampling(x, temp1, filters[0])
+    x = up_sampling(x, temp4, filters[3], dropout_rate=0.2)
+    x = up_sampling(x, temp3, filters[2], dropout_rate=0.2)
+    x = up_sampling(x, temp2, filters[1], dropout_rate=0.1)
+    x = up_sampling(x, temp1, filters[0], dropout_rate=0.1)
 
     outputs = tf.keras.layers.Conv2D(1, (1, 1), activation='sigmoid')(x)
     model = tf.keras.Model(inputs=[inputs], outputs=[outputs], name='u_net')

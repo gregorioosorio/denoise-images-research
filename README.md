@@ -1,7 +1,7 @@
 # Denoise Images Research
 Denoise Images Research
 
-## Setup virtual environment
+## Setup local virtual environment
 - Create and activate virtual environment:
 ```bash
 python3 -m venv .venv
@@ -19,8 +19,22 @@ deactivate
 
 ## Run scripts
 
-### Model
-This create a U-Net model with default parameters and prints out the sumary of it. This model is created using the _Tensorflow_ library.
+### Using Tensorflow Docker image with NVidia GPU support
+- Build the Docker image:
 ```bash
-python3 model.py
+./build_docker.sh
+```
+- Start the Docker container:
+```bash
+./start_docker.sh
+```
+- Execute the train.py script inside Docker container:
+```bash
+cd /tmp
+python3 train.py
+```
+- For expermiments, please use the command line arguments:
+```bash
+cd /tmp
+python3 train.py --learning-rate=1e-6 --model-name='denoise_unet.h5'
 ```
