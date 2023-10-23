@@ -11,6 +11,7 @@ if __name__ == '__main__':
     parser.add_argument('--learning-rate', type=float, default=1e-3, help='learning rate')
     parser.add_argument('--model-name', type=str, default='unet_denoise.h5', help='model name')
     parser.add_argument('--save-best-model-only', type=bool, default=True, help='save the best model only')
+    parser.add_argument('--data-augmentation', type=bool, default=True, help='apply data augmentation')
 
     try:
         args = parser.parse_args()
@@ -38,7 +39,7 @@ if __name__ == '__main__':
             print(e)
 
     print('----------------- Loading Data -----------------')
-    X_train, Y_train = data.load_data()
+    X_train, Y_train = data.load_data(data_augmentation=args.data_augmentation)
 
     print('----------------- Building Model -----------------')
     model = model.u_net((256,256,1))
