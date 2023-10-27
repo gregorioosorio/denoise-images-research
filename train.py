@@ -13,6 +13,7 @@ if __name__ == '__main__':
     parser.add_argument('--save-best-model-only', type=bool, default=True, help='save the best model only')
     parser.add_argument('--data-augmentation', type=bool, default=True, help='apply data augmentation')
     parser.add_argument('--batch-size', type=int, default=4, help='fit batch size')
+    parser.add_argument('--setup-gpu', type=bool, default=True, help='setup gpu')
 
     try:
         args = parser.parse_args()
@@ -27,7 +28,7 @@ if __name__ == '__main__':
 
     print('----------------- GPU Setup -----------------')
     gpus = tf.config.list_physical_devices('GPU')
-    if gpus:
+    if gpus and args.setup_gpu:
         try:
             # Restrict TensorFlow to only allocate 4GB of memory on the first GPU
             tf.config.set_logical_device_configuration(
