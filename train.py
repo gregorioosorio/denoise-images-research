@@ -12,6 +12,7 @@ if __name__ == '__main__':
     parser.add_argument('--model-name', type=str, default='unet_denoise.h5', help='model name')
     parser.add_argument('--save-best-model-only', type=bool, default=True, help='save the best model only')
     parser.add_argument('--data-augmentation', type=bool, default=True, help='apply data augmentation')
+    parser.add_argument('--batch-size', type=int, default=4, help='fit batch size')
 
     try:
         args = parser.parse_args()
@@ -43,7 +44,7 @@ if __name__ == '__main__':
 
     print('----------------- Building Model -----------------')
     model = model.u_net((256,256,1))
-    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=args.learning_rate), loss=tf.keras.losses.MeanSquaredError(), metrics=['mse'])
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=args.learning_rate), loss=tf.keras.losses.MeanAbsoluteError(), metrics=['mae'])
     model.summary()
 
     checkpointer = tf.keras.callbacks.ModelCheckpoint(args.model_name, verbose=1, save_best_only=args.save_best_model_only)
@@ -53,4 +54,4 @@ if __name__ == '__main__':
             checkpointer]
 
     print('----------------- Training Model -----------------')
-    results = model.fit(X_train, Y_train, validation_split=0.3, batch_size=2, epochs=25, callbacks=callbacks)
+    results = model.fit(X_train, Y_train, validation_split=0.3, batch_size=args.batch_size, epochs=25, callbacks=callbacks)
