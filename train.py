@@ -8,11 +8,11 @@ import model
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    parser.add_argument('--learning-rate', type=float, default=1e-3, help='learning rate')
+    parser.add_argument('--learning-rate', type=float, default=1e-6, help='learning rate')
     parser.add_argument('--model-name', type=str, default='unet_denoise.h5', help='model name')
     parser.add_argument('--save-best-model-only', type=bool, default=True, help='save the best model only')
     parser.add_argument('--data-augmentation', type=bool, default=True, help='apply data augmentation')
-    parser.add_argument('--batch-size', type=int, default=4, help='fit batch size')
+    parser.add_argument('--batch-size', type=int, default=32, help='fit batch size')
     parser.add_argument('--setup-gpu', type=bool, default=True, help='setup gpu')
 
     try:
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     X_train, Y_train = data.load_data(data_augmentation=args.data_augmentation)
 
     print('----------------- Building Model -----------------')
-    model = model.u_net((256,256,1))
+    model = model.u_net_gn((256,256,1))
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=args.learning_rate), loss=tf.keras.losses.MeanAbsoluteError(), metrics=['mae'])
     model.summary()
 
