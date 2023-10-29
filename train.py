@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
     print('----------------- GPU Setup -----------------')
     gpus = tf.config.list_physical_devices('GPU')
-    if gpus and args.setup_gpu:
+    if gpus:
         try:
             # Restrict TensorFlow to only allocate 4GB of memory on the first GPU
             tf.config.set_logical_device_configuration(
