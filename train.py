@@ -13,7 +13,7 @@ if __name__ == '__main__':
     parser.add_argument('--save-best-model-only', type=bool, default=True, help='save the best model only')
     parser.add_argument('--data-augmentation', type=bool, default=True, help='apply data augmentation')
     parser.add_argument('--batch-size', type=int, default=32, help='fit batch size')
-    parser.add_argument('--setup-gpu', type=bool, default=True, help='setup gpu')
+    parser.add_argument('--gpu-ram', type=int, default=12288, help='gpu ram MB')
 
     try:
         args = parser.parse_args()
@@ -33,7 +33,7 @@ if __name__ == '__main__':
             # Restrict TensorFlow to only allocate 4GB of memory on the first GPU
             tf.config.set_logical_device_configuration(
                 gpus[0],
-                [tf.config.LogicalDeviceConfiguration(memory_limit=4*1024)])
+                [tf.config.LogicalDeviceConfiguration(memory_limit=args.gpu_ram)])
             logical_gpus = tf.config.list_logical_devices('GPU')
             print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
         except RuntimeError as e:
