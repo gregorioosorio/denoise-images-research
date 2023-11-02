@@ -30,7 +30,7 @@ if __name__ == '__main__':
     gpus = tf.config.list_physical_devices('GPU')
     if gpus:
         try:
-            # Restrict TensorFlow to only allocate 4GB of memory on the first GPU
+            # Restrict TensorFlow to only allocate args.gpu_ram GB of memory on the first GPU
             tf.config.set_logical_device_configuration(
                 gpus[0],
                 [tf.config.LogicalDeviceConfiguration(memory_limit=args.gpu_ram)])
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     X_train, Y_train = data.load_data(data_augmentation=args.data_augmentation)
 
     print('----------------- Building Model -----------------')
-    model = model.u_net_gn((256,256,1))
+    model = model.u_net_res((256,256,1))
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=args.learning_rate), loss=tf.keras.losses.MeanAbsoluteError(), metrics=['mae'])
     model.summary()
 

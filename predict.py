@@ -29,7 +29,7 @@ if __name__ == '__main__':
     X_train, Y_train = data.load_data()
 
     print('----------------- Loading Weights -----------------')
-    model = model.u_net_gn((256,256,1))
+    model = model.u_net_res((256,256,1))
     model.load_weights(args.model_weights_path)
 
     print('----------------- Predicting -----------------')
