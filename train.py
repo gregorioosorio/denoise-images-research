@@ -55,4 +55,4 @@ if __name__ == '__main__':
             checkpointer]
 
     print('----------------- Training Model -----------------')
-    results = model.fit(X_train, Y_train, validation_split=0.3, batch_size=args.batch_size, epochs=25, callbacks=callbacks)
+    results = model.fit(X_train, Y_train, validation_split=0.3, batch_size=args.batch_size, epochs=30, callbacks=callbacks)
