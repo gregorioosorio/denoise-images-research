@@ -13,6 +13,8 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--model-weights-path', type=str, default='./trained_models/denoise_unet.h5', help='model weights path')
     parser.add_argument('--data-percentage', type=float, default=0.1, help='percentage of the data to predict')
+    parser.add_argument('--model-variant', type=str, default='u_net', help='model variant: u_net, u_net_gn, u_net_res')
+
 
     try:
         args = parser.parse_args()
@@ -29,7 +31,13 @@ if __name__ == '__main__':
     X_train, Y_train = data.load_data()
 
     print('----------------- Loading Weights -----------------')
-    model = model.u_net_res((256,256,1))
+    if args.model_variant == 'u_net':
+        model = model.u_net((256,256,1))
+    elif args.model_variant == 'u_net_gn':
+        model = model.u_net_gn((256,256,1))
+    elif args.model_variant == 'u_net_res':
+        model = model.u_net_res((256,256,1))
+
     model.load_weights(args.model_weights_path)
 
     print('----------------- Predicting -----------------')
