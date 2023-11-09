@@ -1,20 +1,28 @@
 import tensorflow as tf
 
-def down_sampling(x, filters, kernel_size=3, activation='relu', dropout_rate=0.1, use_maxpool = True):
-    x = tf.keras.layers.Conv2D(filters=filters, kernel_size=kernel_size, activation=activation, padding='same')(x)
+def down_sampling(x, filters, kernel_size=3, dropout_rate=0.1, use_maxpool = True):
+    x = tf.keras.layers.Conv2D(filters=filters, kernel_size=kernel_size, activation=None, padding='same')(x)
     x = tf.keras.layers.Dropout(rate=dropout_rate)(x)
-    x = tf.keras.layers.Conv2D(filters=filters, kernel_size=kernel_size, activation=activation, padding='same')(x)
+    x = tf.keras.layers.ReLU()(x)
+    x = tf.keras.layers.Conv2D(filters=filters, kernel_size=kernel_size, activation=None, padding='same')(x)
+    x = tf.keras.layers.Dropout(rate=dropout_rate)(x)
+    x = tf.keras.layers.ReLU()(x)
     if use_maxpool:
         return tf.keras.layers.MaxPooling2D(pool_size=2)(x), x
     else:
         return x
 
-def up_sampling(x, y, filters, activation='relu',dropout_rate=0.2):
-    x = tf.keras.layers.Conv2DTranspose(filters=filters, kernel_size=2, strides=2, padding='same')(x)
-    x = tf.keras.layers.concatenate([x, y])
-    x = tf.keras.layers.Conv2D(filters=filters, kernel_size=3, activation=activation, padding='same')(x)
+def up_sampling(x, y, filters,dropout_rate=0.2):
+    x = tf.keras.layers.Conv2DTranspose(filters=filters, kernel_size=2, activation=None, strides=2, padding='same')(x)
     x = tf.keras.layers.Dropout(rate=dropout_rate)(x)
-    x = tf.keras.layers.Conv2D(filters=filters, kernel_size=3, activation=activation, padding='same')(x)
+    x = tf.keras.layers.ReLU()(x)
+    x = tf.keras.layers.concatenate([x, y])
+    x = tf.keras.layers.Conv2D(filters=filters, kernel_size=3, activation=None, padding='same')(x)
+    x = tf.keras.layers.Dropout(rate=dropout_rate)(x)
+    x = tf.keras.layers.ReLU()(x)
+    x = tf.keras.layers.Conv2D(filters=filters, kernel_size=3, activation=None, padding='same')(x)
+    x = tf.keras.layers.Dropout(rate=dropout_rate)(x)
+    x = tf.keras.layers.ReLU()(x)
     return x
 
 def u_net(input_size = (256,256,1)):
