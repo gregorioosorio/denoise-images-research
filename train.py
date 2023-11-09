@@ -8,12 +8,12 @@ import model
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    parser.add_argument('--learning-rate', type=float, default=1e-3, help='learning rate')
+    parser.add_argument('--learning-rate', type=float, default=1e-6, help='learning rate')
     parser.add_argument('--model-name', type=str, default='unet_denoise.h5', help='model name')
     parser.add_argument('--save-best-model-only', type=bool, default=True, help='save the best model only')
     parser.add_argument('--data-augmentation', type=bool, default=True, help='apply data augmentation')
-    parser.add_argument('--batch-size', type=int, default=4, help='fit batch size')
-    parser.add_argument('--setup-gpu', type=bool, default=True, help='setup gpu')
+    parser.add_argument('--batch-size', type=int, default=32, help='fit batch size')
+    parser.add_argument('--gpu-ram', type=int, default=12288, help='gpu ram MB')
 
     try:
         args = parser.parse_args()
@@ -28,12 +28,12 @@ if __name__ == '__main__':
 
     print('----------------- GPU Setup -----------------')
     gpus = tf.config.list_physical_devices('GPU')
-    if gpus and args.setup_gpu:
+    if gpus:
         try:
-            # Restrict TensorFlow to only allocate 4GB of memory on the first GPU
+            # Restrict TensorFlow to only allocate args.gpu_ram GB of memory on the first GPU
             tf.config.set_logical_device_configuration(
                 gpus[0],
-                [tf.config.LogicalDeviceConfiguration(memory_limit=4*1024)])
+                [tf.config.LogicalDeviceConfiguration(memory_limit=args.gpu_ram)])
             logical_gpus = tf.config.list_logical_devices('GPU')
             print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
         except RuntimeError as e:
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     X_train, Y_train = data.load_data(data_augmentation=args.data_augmentation)
 
     print('----------------- Building Model -----------------')
-    model = model.u_net((256,256,1))
+    model = model.u_net_res((256,256,1))
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=args.learning_rate), loss=tf.keras.losses.MeanAbsoluteError(), metrics=['mae'])
     model.summary()
 
@@ -55,4 +55,4 @@ if __name__ == '__main__':
             checkpointer]
 
     print('----------------- Training Model -----------------')
-    results = model.fit(X_train, Y_train, validation_split=0.3, batch_size=args.batch_size, epochs=25, callbacks=callbacks)
+    results = model.fit(X_train, Y_train, validation_split=0.3, batch_size=args.batch_size, epochs=30, callbacks=callbacks)
