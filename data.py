@@ -7,6 +7,15 @@ import re
 import cv2
 
 def load_data(img_size = (256,256), base_dir = './img/dataset/', clean_dir = 'clean', noisy_dirs = ['noisy_1', 'noisy_3', 'noisy_5', 'noisy_7', 'noisy_9'], data_augmentation=False):
+    
+    # To avoid leaking, we will ignore the images that are used in the report
+    ignore_images = [
+        'noisy_1_50.png', 'noisy_1_100.png',
+        'noisy_3_50.png', 'noisy_3_100.png',
+        'noisy_5_50.png', 'noisy_5_100.png',
+        'noisy_7_50.png', 'noisy_7_100.png',
+        'noisy_9_50.png', 'noisy_9_100.png']
+
     # Image pattern
     img_pattern = r'_(\d+)\.png'
 
@@ -19,6 +28,11 @@ def load_data(img_size = (256,256), base_dir = './img/dataset/', clean_dir = 'cl
         images_list = []
         clean_list = []
         for filename in os.listdir(noisy_dir):
+            # If filename is in the report images list, then ignore it
+            if filename in ignore_images:
+                print('ignoring: ', filename)
+                continue
+
             if filename.endswith(".png"):
                 matches = re.search(img_pattern, filename)
                 clean_img = io.imread(os.path.join(clean_dir, 'clean_'+matches.group(1)+'.png'), as_gray=True)
