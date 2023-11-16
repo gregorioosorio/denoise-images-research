@@ -2,15 +2,18 @@
 
 # Define an indexed array with experiment names followed by their parameters
 experiments=(
-    "20231115_raw_lr1x10_4 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-4 --model-variant=u_net"
-     "20231115_gn_lr1x10_4 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-4 --model-variant=u_net_gn"
-    "20231115_res_lr1x10_4 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-4 --model-variant=u_net_res"
-    "20231115_raw_lr1x10_5 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-5 --model-variant=u_net"
-     "20231115_gn_lr1x10_5 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-5 --model-variant=u_net_gn"
-    "20231115_res_lr1x10_5 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-5 --model-variant=u_net_res"
-    "20231115_raw_lr1x10_6 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-6 --model-variant=u_net"
-     "20231115_gn_lr1x10_6 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-6 --model-variant=u_net_gn"
-    "20231115_res_lr1x10_6 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-6 --model-variant=u_net_res"
+    "20231116_raw_lr1x10_3 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-3 --model-variant=u_net"
+     "20231116_gn_lr1x10_3 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-3 --model-variant=u_net_gn"
+    "20231116_res_lr1x10_3 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-3 --model-variant=u_net_res"
+#    "20231115_raw_lr1x10_4 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-4 --model-variant=u_net"
+#     "20231115_gn_lr1x10_4 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-4 --model-variant=u_net_gn"
+#    "20231115_res_lr1x10_4 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-4 --model-variant=u_net_res"
+#    "20231115_raw_lr1x10_5 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-5 --model-variant=u_net"
+#     "20231115_gn_lr1x10_5 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-5 --model-variant=u_net_gn"
+#    "20231115_res_lr1x10_5 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-5 --model-variant=u_net_res"
+#    "20231115_raw_lr1x10_6 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-6 --model-variant=u_net"
+#     "20231115_gn_lr1x10_6 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-6 --model-variant=u_net_gn"
+#    "20231115_res_lr1x10_6 --batch-size=16 --gpu-ram=16384 --learning-rate=1e-6 --model-variant=u_net_res"
 )
 
 # Function to execute the Python script with given parameters
