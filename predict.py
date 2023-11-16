@@ -28,7 +28,7 @@ if __name__ == '__main__':
     print('--------------------------------------------------------------')
 
     print('----------------- Loading Data -----------------')
-    X_train, Y_train = data.load_data()
+    _, _, X_test, Y_test = data.load_data()
 
     print('----------------- Loading Weights -----------------')
     if args.model_variant == 'u_net':
@@ -41,23 +41,27 @@ if __name__ == '__main__':
     model.load_weights(args.model_weights_path)
 
     print('----------------- Predicting -----------------')
-    preds_train = model.predict(X_train[:int(X_train.shape[0]*args.data_percentage)], verbose=1)
+    preds_train = model.predict(X_test[:int(X_test.shape[0]*args.data_percentage)], verbose=1)
 
+    img_i = 0
     while True:
-        fig, axes = plt.subplots(3, 3)
-
-        for i in range(3):
-            ix = random.randint(0, len(preds_train) - 1)
+        fig, axes = plt.subplots(2, 3)
+        for i in range(2):
+            #ix = random.randint(0, len(preds_train) - 1)
+            ix = (img_i + i) % len(X_test)
 
             # Plot the images in the subplots
-            axes[i][0].imshow(X_train[ix], cmap='gray')
-            axes[i][0].set_title('noisy')
+            noisy_percentage = str((img_i//2)*2 + 1) + "%"
+            axes[i][0].imshow(X_test[ix], cmap='gray')
+            axes[i][0].set_title('noisy ' + noisy_percentage)
 
             axes[i][1].imshow(preds_train[ix], cmap='gray')
             axes[i][1].set_title('predict')
 
-            axes[i][2].imshow(Y_train[ix], cmap='gray')
+            axes[i][2].imshow(Y_test[ix], cmap='gray')
             axes[i][2].set_title('clean')
+
+        img_i = (img_i + 2) % len(X_test)
 
         # Adjust spacing between subplots
         plt.tight_layout()

@@ -5,49 +5,64 @@ import matplotlib.pyplot as plt
 import random
 import re
 import cv2
+from argparse import ArgumentParser
+import sys
 
 def load_data(img_size = (256,256), base_dir = './img/dataset/', clean_dir = 'clean', noisy_dirs = ['noisy_1', 'noisy_3', 'noisy_5', 'noisy_7', 'noisy_9'], data_augmentation=False):
     
-    # To avoid leaking, we will ignore the images that are used in the report
-    ignore_images = [
-        'noisy_1_50.png', 'noisy_1_100.png',
-        'noisy_3_50.png', 'noisy_3_100.png',
-        'noisy_5_50.png', 'noisy_5_100.png',
-        'noisy_7_50.png', 'noisy_7_100.png',
-        'noisy_9_50.png', 'noisy_9_100.png']
+    # To avoid leaking, the report images won't be used for training
+    report_images = [
+        'noisy_1_50.png',
+        'noisy_3_50.png',
+        'noisy_5_50.png',
+        'noisy_7_50.png',
+        'noisy_9_50.png',
+        'noisy_1_100.png',
+        'noisy_3_100.png',
+        'noisy_5_100.png',
+        'noisy_7_100.png',
+        'noisy_9_100.png']
 
     # Image pattern
     img_pattern = r'_(\d+)\.png'
 
     # Initialize lists to store the images
-    X_train = []  # Noisy images
-    Y_train = []  # Clean images
+    X_train = []  # Noisy train images
+    Y_train = []  # Clean train images
+    X_test = [] # Noisy test images
+    Y_test = [] # Clean test images
 
     # Function to load images
     def load_noisy_and_clean_images(noisy_dir, clean_dir):
-        images_list = []
-        clean_list = []
+        train_noisy_list = []
+        train_clean_list = []
+        test_noisy_list = []
+        test_clean_list = []
         for filename in os.listdir(noisy_dir):
-            # If filename is in the report images list, then ignore it
-            if filename in ignore_images:
-                print('ignoring: ', filename)
-                continue
+            # Check if the image is test
+            is_test = filename in report_images
 
             if filename.endswith(".png"):
                 matches = re.search(img_pattern, filename)
                 clean_img = io.imread(os.path.join(clean_dir, 'clean_'+matches.group(1)+'.png'), as_gray=True)
                 clean_img = cv2.resize(clean_img, img_size)
-                clean_list.append(clean_img)
                 noisy_img = io.imread(os.path.join(noisy_dir, filename), as_gray=True)
                 noisy_img = cv2.resize(noisy_img, img_size)
-                images_list.append(noisy_img)
-        return (images_list,clean_list)
+                if is_test:
+                    test_clean_list.append(clean_img)
+                    test_noisy_list.append(noisy_img)
+                else:
+                    train_clean_list.append(clean_img)
+                    train_noisy_list.append(noisy_img)
+        return (train_noisy_list,train_clean_list,test_noisy_list,test_clean_list)
 
     # Load noisy images and corresponding clean images from each directory
     for noisy_dir in noisy_dirs:
-        (noisy,clean) = load_noisy_and_clean_images(base_dir + noisy_dir, base_dir + clean_dir)
-        X_train.extend(noisy)
-        Y_train.extend(clean)
+        (train_noisy,train_clean,test_noisy,test_clean) = load_noisy_and_clean_images(base_dir + noisy_dir, base_dir + clean_dir)
+        X_train.extend(train_noisy)
+        Y_train.extend(train_clean)
+        X_test.append(test_noisy)
+        Y_test.append(test_clean)
 
     def flip(image):
         image = cv2.flip(image, 1)  # 1 for horizontal flip
@@ -81,18 +96,39 @@ def load_data(img_size = (256,256), base_dir = './img/dataset/', clean_dir = 'cl
     # Convert the lists of images into numpy arrays
     X_train = np.array(X_train)
     Y_train = np.array(Y_train)
+    X_test = np.array(X_test)
+    Y_test = np.array(Y_test)
+
+    # reshape test arrays
+    X_test = X_test.reshape(X_test.shape[0] * X_test.shape[1], X_test.shape[2], X_test.shape[3])
+    Y_test = Y_test.reshape(Y_test.shape[0] * Y_test.shape[1], Y_test.shape[2], Y_test.shape[3])
 
     # Convert to float and normalize
     X_train = X_train/255.0
     Y_train = Y_train/255.0
+    X_test = X_test/255.0
+    Y_test = Y_test/255.0
 
-    return X_train, Y_train
+    return X_train, Y_train, X_test, Y_test
 
 if __name__ == "__main__":
-    X_train, Y_train = load_data()
+    parser = ArgumentParser()
+    parser.add_argument('--print-test', type=bool, default=False, help='print train images randomly')
+    try:
+        args = parser.parse_args()
+    except:
+        parser.print_help()
+        sys.exit(0)
+
+    X_train, Y_train, X_test, Y_test = load_data()
+    print("X_train and Y_train shapes:")
     print(X_train.shape)
     print(Y_train.shape)
-    while True:
+    print("X_test and Y_test shapes:")
+    print(X_test.shape)
+    print(Y_test.shape)
+
+    while not args.print_test:
         random_index = random.randint(0, len(X_train) - 1)
         plt.figure(figsize=(8, 4))
         plt.subplot(1, 2, 1)
@@ -101,4 +137,15 @@ if __name__ == "__main__":
         plt.subplot(1, 2, 2)
         plt.title("Clean Image")
         plt.imshow(Y_train[random_index], cmap='gray')
+        plt.show()
+    
+    for i in range(len(X_test)):
+        plt.figure(figsize=(8, 4))
+        plt.subplot(1, 2, 1)
+        img_number = str((i%(len(X_test)//2))*2 + 1)
+        plt.title("Noisy Image " + img_number)
+        plt.imshow(X_test[i], cmap='gray')
+        plt.subplot(1, 2, 2)
+        plt.title("Clean Image " + img_number)
+        plt.imshow(Y_test[i], cmap='gray')
         plt.show()

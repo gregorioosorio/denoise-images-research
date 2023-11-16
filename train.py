@@ -42,7 +42,7 @@ if __name__ == '__main__':
             print(e)
 
     print('----------------- Loading Data -----------------')
-    X_train, Y_train = data.load_data(data_augmentation=args.data_augmentation)
+    X_train, Y_train, _, _ = data.load_data(data_augmentation=args.data_augmentation)
 
     print('----------------- Building Model -----------------')
     if args.model_variant == 'u_net':
