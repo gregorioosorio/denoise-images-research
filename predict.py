@@ -4,16 +4,25 @@ import sys
 import matplotlib.pyplot as plt
 import random
 import numpy as np
+import imageio
 
 # local modules
 import data
 import model
+
+def grayscale_to_rgb(grayscale_image):
+    normalized_img = (255 * grayscale_image).astype(np.uint8)
+    rgb_image = np.repeat(normalized_img[:, :, np.newaxis], 3, axis=2)
+    # reshape rgb_image
+    rgb_image = np.reshape(rgb_image, (rgb_image.shape[0], rgb_image.shape[1], 3))
+    return rgb_image
 
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--model-weights-path', type=str, default='./trained_models/denoise_unet.h5', help='model weights path')
     parser.add_argument('--data-percentage', type=float, default=0.1, help='percentage of the data to predict')
     parser.add_argument('--model-variant', type=str, default='u_net', help='model variant: u_net, u_net_gn, u_net_res')
+    parser.add_argument('--export-predict-path', type=str, default=None, help='path to export the predicted images')
 
 
     try:
@@ -51,15 +60,21 @@ if __name__ == '__main__':
             ix = (img_i + i) % len(X_test)
 
             # Plot the images in the subplots
-            noisy_percentage = str((img_i//2)*2 + 1) + "%"
+            noisy_percentage = str((img_i//2)*2 + 1)
             axes[i][0].imshow(X_test[ix], cmap='gray')
-            axes[i][0].set_title('noisy ' + noisy_percentage)
+            axes[i][0].set_title('noisy ' + noisy_percentage + '%')
 
             axes[i][1].imshow(preds_train[ix], cmap='gray')
             axes[i][1].set_title('predict')
 
             axes[i][2].imshow(Y_test[ix], cmap='gray')
             axes[i][2].set_title('clean')
+
+            if args.export_predict_path is not None:
+                img_name = '/noisy' + noisy_percentage + '_group' + str(i)
+                imageio.imwrite(args.export_predict_path + img_name + '_predict.png', grayscale_to_rgb(preds_train[ix]))
+                imageio.imwrite(args.export_predict_path + img_name + '_clean.png', grayscale_to_rgb(Y_test[ix]))
+                imageio.imwrite(args.export_predict_path + img_name + '_noisy.png', grayscale_to_rgb(X_test[ix]))
 
         img_i = (img_i + 2) % len(X_test)
 
